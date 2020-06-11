@@ -25,8 +25,8 @@
 #' @references A. Vehtari, A. Gelman, and J. Gabry, "Practical Bayesian model evaluation using leave-one-out cross-validation and WAIC," Stat Comput, vol. 27, pp. 1413-1432, Sep. 2017, doi: 10.1007/s11222-016-9696-4.
 
 #' @examples
-#' source("./functions/calcpredictions.R")
-#' source("./functions/run_detectionoccupancy.R")
+#' source("./R/calcpredictions.R")
+#' source("./R/run_detectionoccupancy.R")
 #' 
 #' # simulate data
 #' covars <- simulate_covar_data(nsites = 50, nvisitspersite = 2)
@@ -59,10 +59,10 @@
 #' 
 #' # Recommend using multiple cores:
 #' cl <- parallel::makeCluster(2)
-#' parallel::clusterEvalQ(cl = cl,  source("./functions/run_detectionoccupancy.R"))
-#' parallel::clusterEvalQ(cl = cl,  source("./functions/simulate_fit.R"))
-#' parallel::clusterEvalQ(cl = cl,  source("./functions/likelihood.R"))
-#' parallel::clusterEvalQ(cl = cl,  source("./functions/calcpredictions.R"))
+#' parallel::clusterEvalQ(cl = cl,  source("./R/run_detectionoccupancy.R"))
+#' parallel::clusterEvalQ(cl = cl,  source("./R/simulate_fit.R"))
+#' parallel::clusterEvalQ(cl = cl,  source("./R/likelihood.R"))
+#' parallel::clusterEvalQ(cl = cl,  source("./R/calcpredictions.R"))
 #' insamplell <- likelihoods.fit(fittedmodel, cl = cl)
 #' 
 #' outofsample_lppd <- lppd.newdata(fittedmodel,

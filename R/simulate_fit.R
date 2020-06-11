@@ -1,5 +1,5 @@
 # Simulate observations from parameters
-source("./functions/calcpredictions.R")
+source("./R/calcpredictions.R")
 
 #' @examples 
 #' fit <- readRDS("./tmpdata/deto_wind.rds")
@@ -9,8 +9,8 @@ source("./functions/calcpredictions.R")
 #' ## Use to check residuals
 #' fit_sim <- fit
 #' fit_sim$data$y <- detected
-#' source("./functions/DS_residuals.R")
-#' source("./functions/DS_residuals_plots.R")
+#' source("./R/DS_residuals.R")
+#' source("./R/DS_residuals_plots.R")
 #' resid_det <- ds_detection_residuals.fit(fit_sim, type = 100, seed = 321)
 #' resid_occ <- ds_occupancy_residuals.fit(fit_sim, type = "median", seed = 123)
 #' ## These residuals *should* be perfectly normally distributed for simulated data.

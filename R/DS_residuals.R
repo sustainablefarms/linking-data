@@ -1,13 +1,13 @@
 # Dunn-Smyth Residuals for Detection and Occupancy
 # Ref: Warton Mackenzie et al, Rpresence DS residuals and Boral's Dunn-Smyth Residuals
-source("./functions/calcpredictions.R")
+source("./R/calcpredictions.R")
 
 #' @param fit Is a runjags object created by fitting using package runjags.
 #' @examples 
 #' fit <- readRDS("./tmpdata/7_1_mcmcchain_20200424.rds")
 #' fit <- runjags::add.summary(fit)
 #' fit$data <- as.list.format(fit$data)
-#' source("./functions/calcpredictions.R")
+#' source("./R/calcpredictions.R")
 #' detection_resids <- ds_detection_residuals.fit(fit, type = "median")
 #' occupancy_resids <- ds_occupancy_residuals.fit(fit, type = "median")
 #' # More modern fitted object

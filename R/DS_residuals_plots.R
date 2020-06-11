@@ -1,5 +1,5 @@
 ## DS_residual_plotting
-source("./functions/DS_residuals.R")
+source("./R/DS_residuals.R")
 
 # two situations:
 # 1) ploting residuals against a covariate already fitted  in the model
@@ -10,8 +10,8 @@ library(ggplot2); library(dplyr);
 #' @examples 
 #' fit <- readRDS("./tmpdata/7_1_mcmcchain_20200424.rds")
 #' fit <- runjags::add.summary(fit)
-#' source("./functions/calcpredictions.R")
-#' source("./functions/DS_residuals.R")
+#' source("./R/calcpredictions.R")
+#' source("./R/DS_residuals.R")
 #' fit$data <- as.list.format(fit$data)
 #' detection_resids <- ds_detection_residuals.fit(fit, type = "median", conditionalLV = FALSE)
 #' 

@@ -1,7 +1,10 @@
-context("Wholistic tests on model with different ModelSites and no LVs")
+############### Wholistic Test on different ModelSites and LVs #########
+# compare artmodel generated likelihood and Enum species to fit_runjags versions, and Enum species to observations
+
+context("Wholistic tests on model with different ModelSites and LVs")
 
 # Create a process with known parameters
-artmodel <- artificial_runjags(nspecies = 60, nsites = 4000, nvisitspersite = 2, nlv = 0)
+artmodel <- artificial_runjags(nspecies = 60, nsites = 2000, nvisitspersite = 2, nlv = 4)
 
 # fit to data and simulations using runjags
 originalXocc <- Rfast::eachrow(Rfast::eachrow(artmodel$data$Xocc, artmodel$XoccProcess$scale, oper = "*"),
@@ -18,16 +21,16 @@ fit_runjags <- run.detectionoccupancy(originalXocc, cbind(originalXobs, artmodel
                                       ModelSite = "ModelSite",
                                       OccFmla = artmodel$XoccProcess$fmla,
                                       ObsFmla = artmodel$XobsProcess$fmla,
-                                      initsfunction = function(chain, indata){return(NULL)},
-                                      MCMCparams = list(n.chains = 2, adapt = 1000, burnin = 10000, sample = 500, thin = 40),
-                                      nlv = 0)
-save(fit_runjags, artmodel, originalXocc, originalXobs, file = "./tests/testthat/benchmark_varietysitesmodel_nolv.Rdata")
+                                      # initsfunction = function(chain, indata){return(NULL)},
+                                      # MCMCparams = list(n.chains = 2, adapt = 1000, burnin = 10000, sample = 500, thin = 40),
+                                      nlv = 4)
+save(fit_runjags, artmodel, originalXocc, originalXobs, file = "./tests/testthat/benchmark_varietysitesmodel_initsgiven.Rdata")
 
 gwk <- tibble::enframe(coda::geweke.diag(fit_runjags, frac1=0.1, frac2=0.5)$z, name = "varname")
 qqnorm(gwk$value)
 qqline(gwk$value)
 varname2type <- function(varnames){
-  types <- case_when(
+  types <- dplyr::case_when(
     grepl("lv.coef", varnames) ~ "LV Load",
     grepl("LV.*,1\\]", varnames) ~ "LV1",
     grepl("LV.*,2\\]", varnames) ~ "LV2",
@@ -52,8 +55,8 @@ gwk %>%
                               trans = "identity") +
   ggplot2::ggtitle("Geweke Convergence Statistics Normality Tests",
                    subtitle = "0.01 threshold shown")
-# LVs did not converge!
-hist(fit_runjags$summaries[,"AC.300"]) #Autocorellation looks ok.
+# LV loads did not converge!
+hist(fit_runjags$summaries[,"AC.300"]) #Some autocorrelation
 
 
 test_that("Posterior credible distribution overlaps true parameters", {
@@ -61,7 +64,7 @@ test_that("Posterior credible distribution overlaps true parameters", {
   inCI <- (fit_runjags$summaries[var2compare, "Lower95"] <= artmodel$mcmc[[1]][1, var2compare]) &
     (fit_runjags$summaries[var2compare, "Upper95"] >= artmodel$mcmc[[1]][1, var2compare])
   inCI[!grepl("^LV", names(inCI))]
-  expect_gt(mean(inCI), 0.95)
+  expect_equal(mean(inCI), 0.95, tol = 0.05)
 })
 
 test_that("Median of Posterior is close to true", {
@@ -72,9 +75,12 @@ test_that("Median of Posterior is close to true", {
   plot(res[grepl("^LV", names(res))])
   plot(relres[!grepl("^LV", names(relres))])
   plot(relres[grepl("^LV", names(relres))])
-  expect_equivalent(res[!grepl("^LV", names(res))],
+  expect_equivalent(relres[!grepl("^LV", names(res))],
                     rep(0, sum(!grepl("^LV", names(res)))),
-                    tol = 0.1 * artmodel$mcmc[[1]][1, grep("^LV", names(res))]))
+                    tol = 0.1)
+  expect_equivalent(relres[grepl("^LV", names(res))],
+                    rep(0, sum(grepl("^LV", names(res)))),
+                    tol = 0.2)
 })
 
 test_that("Fitted likelihood matches true likelihood", {
@@ -94,10 +100,10 @@ test_that("Expected Number of Detected Species", {
   Enumspec_art <- predsumspecies(artmodel, UseFittedLV = TRUE, cl = cl)
   parallel::stopCluster(cl)
   cbind(rj = t(Enumspec), art = t(Enumspec_art)) %>%
-    as_tibble() %>%
+    tibble::as_tibble() %>%
     tibble::rowid_to_column() %>%
-    ggplot()
-  expect_equivalent(Enumspec, Enumspec_art)
+    ggplot2::ggplot()
+  expect_equivalent(Enumspec, Enumspec_art, tol = 0.1)
   
   NumSpecies <- detectednumspec(y = fit_runjags$data$y, ModelSite = fit_runjags$data$ModelSite)
   

@@ -1,5 +1,6 @@
 # linking-data
-Repo for scripts from the 'Linking Data' project, aimed at predicting farm biodiversity using remote sensing products
+Repo for scripts from the 'Linking Data' project, aimed at predicting farm biodiversity using remote sensing products.
+This repo is *obsolete*. The relevant code is under development in the repositories 'msod' and 'sflddata'
 
 
 ## Research Plans
